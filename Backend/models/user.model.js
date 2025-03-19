@@ -51,7 +51,7 @@ userschema.methods.comparepassword =  async function(password){
     return await bcrypt.compare(password , this.password);
 } 
 
-userschema.methods.generateTokens =  async function(){
+userschema.methods.generateAccessTokens =  async function(){
     return jwt.sign(
         {
             _id : this._id ,
@@ -67,4 +67,17 @@ userschema.methods.generateTokens =  async function(){
         }
     )
 }
+
+userschema.methods.generateRefreshTokens =  async function(){
+    return jwt.sign(
+        {
+            _id : this._id ,
+           
+            } ,
+        process.env.REFRESH_TOKEN_SECRET ,
+        {
+            expiresIn:process.env.REFRESH_TOKEN_EXPIRY
+        }
+    )
+    }
 export const User = mongoose.model('User', userschema);
