@@ -51,33 +51,29 @@ userschema.methods.comparepassword =  async function(password){
     return await bcrypt.compare(password , this.password);
 } 
 
-userschema.methods.generateAccessTokens =  async function(){
+userschema.methods.generateAccessToken=function(){
     return jwt.sign(
         {
-            _id : this._id ,
-            email : this.email ,
-            socketID : this.socketID , 
-            fullname : this.fullname
-
-
+        _id:this._id ,
+        
         } , 
         process.env.ACCESS_TOKEN_SECRET , 
         {
             expiresIn:process.env.ACCESS_TOKEN_EXPIRY
         }
-    )
+)
 }
-
-userschema.methods.generateRefreshTokens =  async function(){
+userschema.methods.generateRefreshToken=function(){
     return jwt.sign(
         {
-            _id : this._id ,
-           
-            } ,
-        process.env.REFRESH_TOKEN_SECRET ,
+        _id:this._id ,
+        
+        } , 
+        process.env.REFRESH_TOKEN_SECRET , 
         {
             expiresIn:process.env.REFRESH_TOKEN_EXPIRY
         }
-    )
-    }
+)
+}
+
 export const User = mongoose.model('User', userschema);

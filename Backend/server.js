@@ -3,8 +3,10 @@ import { app } from './app.js';
 import https from 'https';
 import dotenv from 'dotenv';
 import connectDB from './DB/db.js';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
+
 
 connectDB()
 .then(() => {

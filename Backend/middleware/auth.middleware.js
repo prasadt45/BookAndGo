@@ -1,32 +1,36 @@
-import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 
-
-export const verifyJWT = asyncHandler(async(req, res, next) => {
-
+export const verifyJWT = asyncHandler(async (req, res, next) => {
     try {
-        const token =  req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer " , "") 
-    
-        if(!token){
-            throw new ApiError(401, "No token provided")
-        }
-    
-        const decoded = jwt.verify(token , process.env.ACCESS_TOKEN_SECRET);
-        const user = await User.findById(decoded._id);
-        if(!user){
-            throw new ApiError(401, "User not found")
-        }
-        req.user = user;
-        next();
+      console.log("Cookies:", req.cookies);
+      console.log("Authorization Header:", req.header("Authorization"));
+  
+      const token = req.cookies?.accesstoken || req.header("Authorization")?.replace("Bearer ", "");
+  
+      console.log("Extracted Token:", token);
+  
+      if (!token) {
+        throw new ApiError(401, "Unauthorized Request - No token provided");
+      }
+  
+      // Verify token
+      const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      console.log("Decoded Token:", decodedToken);
+  
+      const user = await User.findById(decodedToken?._id).select("-password -refreshToken");
+      if (!user) {
+        throw new ApiError(401, "Invalid Access Token - User not found");
+      }
+  
+      req.user = user;
+      next();
     } catch (error) {
-        throw new ApiError(401, "Invalid token")
-        
-        
+      console.error("JWT Verification Error:", error);
+      throw new ApiError(401, error?.message || "Invalid Access Token");
     }
-})
-
-
+  });
+  
 
